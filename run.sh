@@ -15,7 +15,7 @@ get(){
 }
 
 upgrade(){
-  info "Upgrading"
+  info "---> Upgrading"
 
   up_url=$(echo $service | jq -r '.actions.upgrade')
   up_data=$(echo $service | jq -r --arg img "docker:$IMAGE" '
@@ -27,7 +27,7 @@ upgrade(){
     | {inServiceStrategy: .}
   ')
 
-  curl -i -s --user "$ACCESS_KEY:$SECRET" -X POST "$up_url" -H 'Content-Type: application/json' -d "$up_data"
+  curl -s --user "$ACCESS_KEY:$SECRET" -X POST "$up_url" -H 'Content-Type: application/json' -d "$up_data" > /dev/null
 
   while [ "$TIMEOUT" -gt "0" ]; do
     service=$(get)
@@ -35,9 +35,9 @@ upgrade(){
 
     case $state in
       upgraded)
-        info "Upgraded"
+        info "---> Upgraded"
         finish_url=$(echo $service | jq -r '.actions.finishupgrade')
-        curl -i -s --user "$ACCESS_KEY:$SECRET" -X POST "$finish_url"
+        curl -s --user "$ACCESS_KEY:$SECRET" -X POST "$finish_url" > /dev/null
         success "Finished"
         return
         ;;
@@ -50,9 +50,9 @@ upgrade(){
     esac
   done
 
-  info "Upgrade timeout. Cancel upgrade"
+  info "---> Upgrade timeout. Cancel upgrade"
   cancel_url=$(echo $service | jq -r '.actions.cancelupgrade')
-  curl -i -s --user "$ACCESS_KEY:$SECRET" -X POST "$cancel_url"
+  curl -s --user "$ACCESS_KEY:$SECRET" -X POST "$cancel_url" > /dev/null
 
   while true; do
     service=$(get)
@@ -60,12 +60,12 @@ upgrade(){
 
     case $state in
       canceling-upgrade)
-        info "Canceling upgrade"
+        info "---> Canceling upgrade"
         sleep 1
         ;;
 
       *)
-        fail "Upgrade cancelled"
+        fail "---> Upgrade cancelled"
         ;;
     esac
   done
@@ -81,7 +81,7 @@ main(){
       ;;
 
     *)
-      fail "Can't upgrade, service $SERVICE_ID is $state"
+      fail "---> Can't upgrade, service $SERVICE_ID is $state"
       ;;
   esac
 }
