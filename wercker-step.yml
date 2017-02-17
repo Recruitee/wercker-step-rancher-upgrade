@@ -1,5 +1,5 @@
 name: rancher-upgrade
-version: 0.1.0
+version: 0.1.1
 description: Upgrade rancher service
 properties:
   url:
