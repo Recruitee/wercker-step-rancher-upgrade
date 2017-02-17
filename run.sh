@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 
 set -e
 
@@ -41,6 +41,7 @@ case $state in
           echo "---> Upgraded"
           finish_url=$(echo $service | jq -r '.actions.finishupgrade')
           curl -s --user "$ACCESS_KEY:$SECRET" -X POST "$finish_url" > /dev/null
+          echo "---> Finished"
           exit 0
           ;;
 
